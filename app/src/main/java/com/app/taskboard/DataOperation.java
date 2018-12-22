@@ -41,18 +41,6 @@ class DataOperation {
     }
 
     TaskList load(Context context) {
-        // create a backup before loading TODO: remove code later when not in use
-        File backUp = new File(absFilePath + ".bk");
-        backUp.delete();
-        try(FileOutputStream fout = new FileOutputStream(absFilePath + ".bk");
-            FileInputStream  fin  = new FileInputStream(absFilePath) ) {
-            int i;
-            while ( (i = fin.read()) > 0 )
-                fout.write(i);
-        } catch(Exception e) {
-            //TODO: add case later
-        }
-
         mTaskList = new TaskList(context);
         try (FileReader dbReader = new FileReader(dataBase)) {
             BufferedReader dbBuf = new BufferedReader(dbReader);
@@ -66,6 +54,21 @@ class DataOperation {
         } catch (Exception e) {
             //TODO: add case later
         }
+
+        // create a backup TODO: remove code later when not in use
+        if(mTaskList == null || mTaskList.size() == 0)  //overwrite backup only if database read is success
+            return mTaskList;
+        File backUp = new File(absFilePath + ".bk");
+        backUp.delete();
+        try(FileOutputStream fout = new FileOutputStream(absFilePath + ".bk");
+            FileInputStream  fin  = new FileInputStream(absFilePath) ) {
+            int i;
+            while ( (i = fin.read()) > 0 )
+                fout.write(i);
+        } catch(Exception e) {
+            //TODO: add case later
+        }
+
         return mTaskList;
     }
 
