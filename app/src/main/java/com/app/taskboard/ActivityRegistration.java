@@ -1,5 +1,6 @@
 package com.app.taskboard;
 
+import android.support.design.widget.FloatingActionButton;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -18,7 +19,7 @@ class ActivityRegistration {
     void registerResource(int activityRes, int resource, final RegisterClick implementor, final Object ...args) {
         View view = Run.findViewByActivity(activityRes, resource);
         // set listeners for Button clicks
-        if(view instanceof Button) {
+        if(view instanceof Button || view instanceof FloatingActionButton) {
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
