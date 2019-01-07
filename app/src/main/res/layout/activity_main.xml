@@ -26,10 +26,11 @@
 
         <ListView
             android:id="@+id/taskDisplay"
-            android:layout_width="395dp"
-            android:layout_height="632dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_marginTop="5dp"
             android:listSelector="@android:color/darker_gray"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -44,20 +45,6 @@
             android:src="@drawable/ic_add_white_24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/taskDisplay" />
-
-        <EditText
-            android:id="@+id/newTask"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="26dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="26dp"
-            android:ems="10"
-            android:inputType="textPersonName"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/taskDisplay" />
 
     </android.support.constraint.ConstraintLayout>
 
