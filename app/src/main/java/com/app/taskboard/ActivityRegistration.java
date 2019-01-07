@@ -17,7 +17,7 @@ class ActivityRegistration {
     }
 
     void registerResource(int activityRes, int resource, final RegisterClick implementor, final Object ...args) {
-        View view = Run.findViewByActivity(activityRes, resource);
+        View view = Run.findViewByResource(activityRes, resource);
         // set listeners for Button clicks
         if(view instanceof Button || view instanceof FloatingActionButton) {
             view.setOnClickListener(new View.OnClickListener() {
