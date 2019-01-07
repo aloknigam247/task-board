@@ -21,7 +21,7 @@ class TaskList {
     TaskList(Context context) {
         mTaskList = new ArrayList<>();
         mTaskAdapter = new TaskAdapter(context);
-        taskView = (AdapterView) Run.findViewByResource(R.layout.activity_main , R.id.taskDisplay);
+        taskView = (AdapterView) Run.findViewByActivity(R.layout.activity_main , R.id.taskDisplay);
         if(taskView != null) {
             taskView.setAdapter(mTaskAdapter.getAdapter());
         }
