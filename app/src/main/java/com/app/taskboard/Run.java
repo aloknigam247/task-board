@@ -11,15 +11,15 @@ class Run {
     private Activity mActivity;
     private Context mContext;
     private DataOperation mDatabase;
-    private TaskList mTaskList;
-    private ActivityRegistration register;
+    private TaskAdapter mTaskAdapter;
+    private ClickRegistration register;
     private boolean isInitailized;
-    static final private Map<Integer, Activity> activityMap = new HashMap<>();
-    static final private Map<Integer, View>     layoutMap   = new HashMap<>();
+    final private Map<Integer, Activity> activityMap = new HashMap<>();
+    final private Map<Integer, View>     layoutMap   = new HashMap<>();
     static Run obj;
 
     private Run() {
-        register = new ActivityRegistration();
+        register = new ClickRegistration();
     }
 
     static Run getRunObject() {
@@ -36,7 +36,7 @@ class Run {
         isInitailized = true;
         UserPermission.checkStoragePermission(activity);
         mDatabase = new DataOperation();
-        if( mDatabase.connect() ) mTaskList = mDatabase.load(mContext);
+        if( mDatabase.connect() ) mTaskAdapter = mDatabase.load(mContext);
         else {
             //TODO: unable to connect to database check for permissions or exit
         }
@@ -54,27 +54,27 @@ class Run {
         if(isInitailized) {
             mDatabase.save();
             mDatabase.disconnect();
-            mTaskList = null;
+            mTaskAdapter = null;
         }
     }
 
-    ActivityRegistration getRegister() {
+    ClickRegistration getRegister() {
         return register;
     }
 
-    TaskList getTaskList() {
-        return mTaskList;
+    TaskAdapter getTaskAdapter() {
+        return mTaskAdapter;
     }
 
     Context getContext() {
         return mContext;
     }
 
-    static Activity getActivity(int activityRes) {
+    Activity getActivity(int activityRes) {
         return activityMap.get(activityRes);
     }
 
-    static View findViewByResource(int resId, int resource) {
+    View findViewByResource(int resId, int resource) {
         Activity mActivity = activityMap.get(resId);
         if(mActivity != null)
             return mActivity.findViewById(resource);
