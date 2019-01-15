@@ -16,15 +16,15 @@ class DataOperation {
     private final String dbFile = "tasks.txt";
     private final String absFilePath = rootDir + "/" + dbFile;
     private static File dataBase;
-    private TaskList mTaskList;
+    private TaskAdapter mTaskAdapter;
 
     boolean connect() {
         dataBase = null;
         File db = new File(absFilePath);
         try {
             if(!db.exists()) {
-                db.createNewFile();
-                db.setReadable(true);
+                db.createNewFile(); //TODO: check return value
+                db.setReadable(true);   //TODO: check return value
             }
         }
         catch (Exception e){
@@ -37,17 +37,17 @@ class DataOperation {
 
     void disconnect() {
         dataBase = null;
-        mTaskList = null;
+        mTaskAdapter = null;
     }
 
-    TaskList load(Context context) {
-        mTaskList = new TaskList(context);
+    TaskAdapter load(Context context) {
+        mTaskAdapter = new TaskAdapter(context);
         try (FileReader dbReader = new FileReader(dataBase)) {
             BufferedReader dbBuf = new BufferedReader(dbReader);
             Task temp;
             // file is already sorted, only load here for faster startup
-            while ( (temp = Task.readTask(dbBuf)) != null)
-                mTaskList.add(temp);
+            while ( (temp = Task.readFromFile(dbBuf)) != null)
+                mTaskAdapter.addFromFile(temp);
 
             dbBuf.close();
 
@@ -56,10 +56,10 @@ class DataOperation {
         }
 
         // create a backup TODO: remove code later when not in use
-        if(mTaskList == null || mTaskList.size() == 0)  //overwrite backup only if database read is success
-            return mTaskList;
+        if(mTaskAdapter == null || mTaskAdapter.getCount() == 0)  //overwrite backup only if database read is success
+            return mTaskAdapter;
         File backUp = new File(absFilePath + ".bk");
-        backUp.delete();
+        backUp.delete();    //TODO: check return value
         try(FileOutputStream fout = new FileOutputStream(absFilePath + ".bk");
             FileInputStream  fin  = new FileInputStream(absFilePath) ) {
             int i;
@@ -69,7 +69,7 @@ class DataOperation {
             //TODO: add case later
         }
 
-        return mTaskList;
+        return mTaskAdapter;
     }
 
     void save() {
@@ -77,8 +77,8 @@ class DataOperation {
         clearDBFile();
         try(FileWriter dbWriter = new FileWriter(dataBase)) {
             BufferedWriter dbBuf = new BufferedWriter(dbWriter);
-            for(int i=0; i<mTaskList.size(); i++)
-                Task.writeTask(mTaskList.getTask(i), dbBuf);
+            for(int i = 0; i< mTaskAdapter.getCount(); i++)
+                Task.writeToFile((Task) mTaskAdapter.getItem(i), dbBuf);
             dbBuf.close();
         } catch(Exception e) {
             //TODO: add case later
@@ -89,7 +89,7 @@ class DataOperation {
         if(dataBase == null) {
             //TODO: add case later
         }
-        dataBase.delete();
+        dataBase.delete();  //TODO: check return value
         connect();  //TODO: infer return value
     }
 }
