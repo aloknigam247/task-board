@@ -2,6 +2,7 @@ package com.app.taskboard;
 
 import android.content.Context;
 import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -11,6 +12,9 @@ import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.lang.Exception;
+import java.lang.Object;
+import java.lang.String;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,9 +31,13 @@ class TaskAdapter extends BaseAdapter {
         mTaskForm = new TaskForm();
         mTaskForm.inflateTaskForm(context);
 
-        Run.getRunObject().getRegister().registerResource(R.layout.activity_main, R.id.taskDisplay, (AdapterView<?> parent, View view, int position, long id) -> { setItemClicked(position); });
-
-        add(new Task("Sample Task 2."));
+        Run.getRunObject().getRegister().registerResource(
+                R.layout.activity_main,
+                R.id.taskDisplay,
+                (AdapterView<?> parent, View view, int position, long id) -> {
+                        setItemClicked(position);
+                    }
+        );
     }
 
     /*
@@ -128,7 +136,7 @@ class TaskForm {
     private View mTaskFormView;
     private enum State {
         add_new,
-        update
+        edit
     }
     private State st;
 
@@ -155,7 +163,7 @@ class TaskForm {
     }
 
     void editTaskForm(Task task) {
-        st = State.update;
+        st = State.edit;
         Task.writeToForm(task, mTaskFormView);
         mDialog.show();
     }
@@ -170,7 +178,7 @@ class TaskForm {
                 break;
             }
 
-            case update: {
+            case edit: {
                 Task.readFromForm(view, taskAdapter.getItemClicked()).updateTaskFace();
                 taskAdapter.notifyDataSetChanged();
                 break;
@@ -183,13 +191,13 @@ class TaskForm {
     void taskFormCancel(AdapterView<?> parent, View view, int position, long id) {
         mDialog.dismiss();
     }
-
 }
 
 class Task {
     //Task properties
     private String name;
     private View taskFace;
+    private final Run mRun = Run.getRunObject();
 
     final private int DEFAULT_TASK_BACKGROUND = Run.getRunObject().getContext().getResources().getColor(R.color.defaultTaskFaceBackground);
     final private int COLOR_TASK_SELECTED = Run.getRunObject().getContext().getResources().getColor(R.color.taskFaceSelected);
@@ -208,9 +216,11 @@ class Task {
         if(taskFace != null)
             return taskFace;
 
-        TextView t = new TextView(Run.getRunObject().getContext());
+        View v = LayoutInflater.from(mRun.getContext()).inflate(R.layout.task_face, null);
+
+        TextView t = v.findViewById(R.id.task_face);
         t.setText(name);
-        taskFace = t;
+        taskFace = v;
         return taskFace;
     }
 
@@ -235,7 +245,7 @@ class Task {
                 return new Task(str);
         }
         catch(Exception e) {
-            //TODO: add case later
+            TBLog.e(e.toString());
         }
         return null;
     }
@@ -255,12 +265,11 @@ class Task {
             writeBuf.write('\n');
         }
         catch (Exception e) {
-            //TODO: add case later
+            TBLog.e(e.toString());
         }
     }
 
     static void writeToForm(Task t, View v) {
-        Run run = Run.getRunObject();
         EditText name = v.findViewById(R.id.taskName);
 
         if(t == null) {

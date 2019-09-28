@@ -6,8 +6,6 @@ import android.os.Environment;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 
@@ -22,13 +20,13 @@ class DataOperation {
         dataBase = null;
         File db = new File(absFilePath);
         try {
-            if(!db.exists()) {
-                db.createNewFile(); //TODO: check return value
-                db.setReadable(true);   //TODO: check return value
+            if (!db.exists()) {
+                db.createNewFile();
+                if (!db.setReadable(true))
+                    TBLog.e(absFilePath + "can not set readable");
             }
-        }
-        catch (Exception e){
-            //TODO: add process later
+        } catch (Exception e) {
+            TBLog.e(e.toString());
             return false;
         }
         dataBase = db;
@@ -45,51 +43,28 @@ class DataOperation {
         try (FileReader dbReader = new FileReader(dataBase)) {
             BufferedReader dbBuf = new BufferedReader(dbReader);
             Task temp;
-            // file is already sorted, only load here for faster startup
-            while ( (temp = Task.readFromFile(dbBuf)) != null)
+
+            while ((temp = Task.readFromFile(dbBuf)) != null)
                 mTaskAdapter.addFromFile(temp);
 
             dbBuf.close();
 
         } catch (Exception e) {
-            //TODO: add case later
-        }
-
-        // create a backup TODO: remove code later when not in use
-        if(mTaskAdapter == null || mTaskAdapter.getCount() == 0)  //overwrite backup only if database read is success
-            return mTaskAdapter;
-        File backUp = new File(absFilePath + ".bk");
-        backUp.delete();    //TODO: check return value
-        try(FileOutputStream fout = new FileOutputStream(absFilePath + ".bk");
-            FileInputStream  fin  = new FileInputStream(absFilePath) ) {
-            int i;
-            while ( (i = fin.read()) > 0 )
-                fout.write(i);
-        } catch(Exception e) {
-            //TODO: add case later
+            TBLog.e(e.toString());
         }
 
         return mTaskAdapter;
     }
 
     void save() {
-        //TODO: update database only if database is changed
-        clearDBFile();
-        try(FileWriter dbWriter = new FileWriter(dataBase)) {
+        //TODO: edit database only if database is changed
+        try (FileWriter dbWriter = new FileWriter(dataBase)) {
             BufferedWriter dbBuf = new BufferedWriter(dbWriter);
-            for(int i = 0; i< mTaskAdapter.getCount(); i++)
+            for (int i = 0; i < mTaskAdapter.getCount(); i++)
                 Task.writeToFile((Task) mTaskAdapter.getItem(i), dbBuf);
             dbBuf.close();
-        } catch(Exception e) {
-            //TODO: add case later
+        } catch (Exception e) {
+            TBLog.e(e.toString());
         }
-    }
-
-    private void clearDBFile(){
-        if(dataBase == null) {
-            //TODO: add case later
-        }
-        dataBase.delete();  //TODO: check return value
-        connect();  //TODO: infer return value
     }
 }

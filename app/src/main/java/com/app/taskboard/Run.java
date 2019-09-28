@@ -8,8 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 class Run {
-    private Activity mActivity;
-    private Context mContext;
+    private Activity currActivity;
+    private Context currContext;
+    private int currActivityRes;
     private DataOperation mDatabase;
     private TaskAdapter mTaskAdapter;
     private ClickRegistration register;
@@ -29,20 +30,22 @@ class Run {
     }
 
     void setContext(Context context) {
-        mContext = context;
+        currContext = context;
     }
 
     void startUp(Activity activity) {
         isInitailized = true;
         UserPermission.checkStoragePermission(activity);
         mDatabase = new DataOperation();
-        if( mDatabase.connect() ) mTaskAdapter = mDatabase.load(mContext);
+        if( mDatabase.connect() ) mTaskAdapter = mDatabase.load(currContext);
         else {
             //TODO: unable to connect to database check for permissions or exit
         }
     }
 
-    void addActivity(int activityRes, Activity activity) {
+    void setActivity(int activityRes, Activity activity, Context context) {
+        currActivityRes = activityRes;
+        currActivity = activity;
         activityMap.put(activityRes, activity);
     }
 
@@ -67,11 +70,15 @@ class Run {
     }
 
     Context getContext() {
-        return mContext;
+        return currContext;
     }
 
     Activity getActivity(int activityRes) {
         return activityMap.get(activityRes);
+    }
+
+    Activity getCurrActivity() {
+        return currActivity;
     }
 
     View findViewByResource(int resId, int resource) {

@@ -9,6 +9,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
+import java.lang.Override;
+import java.lang.String;
+
 public class MainActivity extends AppCompatActivity {
     private Run mRun;
     private TaskAdapter mTaskAdapter;
@@ -21,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(myToolbar);
 
         mRun = Run.getRunObject();
-        mRun.addActivity(R.layout.activity_main, this);
+        mRun.setActivity(R.layout.activity_main, this, this);
         mRun.setContext(this);
         mRun.startUp(this);
         mTaskAdapter = mRun.getTaskAdapter();
@@ -34,7 +37,13 @@ public class MainActivity extends AppCompatActivity {
             //TODO: add case later
         }
 
-        mRun.getRegister().registerResource(R.layout.activity_main, R.id.addTask, (AdapterView<?> parent, View view, int position, long id) -> {mRun.getTaskAdapter().showNewForm();});
+        mRun.getRegister().registerResource(
+                R.layout.activity_main,
+                R.id.addTask,
+                (AdapterView<?> parent, View view, int position, long id) -> {
+                    mRun.getTaskAdapter().showNewForm();
+                }
+        );
     }
 
     @Override
